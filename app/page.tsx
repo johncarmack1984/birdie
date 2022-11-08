@@ -8,5 +8,5 @@ async function getData() {
 
 export default async function Home() {
   const data = await getData();
-  return <div className="">{JSON.stringify(data)}</div>;
+  return <div>{data.name}</div>;
 }
