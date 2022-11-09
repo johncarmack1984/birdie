@@ -1,10 +1,17 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use deadpool_postgres::Pool;
 
 mod postgres;
 mod user;
 
-#[get("/users")]
+// #[get("/")]
+#[get("/hello")]
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().json("Hello world!")
+}
+
+// #[get("/users")]
+#[get("/")]
 async fn list_users(pool: web::Data<Pool>) -> HttpResponse {
     let client = match pool.get().await {
         Ok(client) => client,
@@ -37,6 +44,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pg_pool.clone()))
+            .service(hello)
             .service(list_users)
     })
     .bind(&address)?

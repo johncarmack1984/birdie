@@ -1,0 +1,12 @@
+{
+  "Prettier-SQL.logicalOperatorNewline": "before",
+  "Prettier-SQL.keywordCase": "upper",
+  "Prettier-SQL.linesBetweenQueries": 1,
+  "Prettier-SQL.newlineBeforeSemicolon": false,
+  "Prettier-SQL.denseOperators": false,
+  "Prettier-SQL.indentStyle": "standard",
+  "Prettier-SQL.insertSpacesOverride": false,
+  "Prettier-SQL.SQLFlavourOverride": "postgresql",
+  "Prettier-SQL.tabulateAlias": true,
+  "Prettier-SQL.commaPosition": "before"
+}
