@@ -1,34 +1,82 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Compose sample application
 
-## Getting Started
+### Use with Docker Development Environments
 
-First, run the development server:
+You can open this sample in the Dev Environments feature of Docker Desktop version 4.12 or later.
 
-```bash
-npm run dev
-# or
-yarn dev
+[Open in Docker Dev Environments <img src="../open_in_new.svg" alt="Open in Docker Dev Environments" align="top"/>](https://open.docker.com/dashboard/dev-envs?url=https://github.com/docker/awesome-compose/tree/master/react-rust-postgres)
+
+### React application with a Rust backend and a Postgresql database
+
+Project structure:
+```
+.
+├── backend
+│   ├── Dockerfile
+│   ...
+├── compose.yaml
+├── frontend
+│   ├── ...
+│   └── Dockerfile
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[_compose.yaml_](compose.yaml)
+```
+services:
+  backend:
+    build: backend
+    ...
+  db:
+    image: postgres:12-alpine
+    ...
+  frontend:
+    build: frontend
+    ports:
+    - 3000:3000
+    ...
+```
+The compose file defines an application with three services `frontend`, `backend` and `db`.
+When deploying the application, docker compose maps port 3000 of the frontend service container to port 3000 of the host as specified in the file.
+Make sure port 3000 on the host is not already being in use.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy with docker compose
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+```
+$ docker compose up -d
+Creating network "react-rust-postgres_default" with the default driver
+Building backend
+...
+Successfully tagged react-rust-postgres_frontend:latest
+WARNING: Image for service frontend was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Creating react-rust-postgres_frontend_1 ... done
+Creating react-rust-postgres_db_1       ... done
+Creating react-rust-postgres_backend_1  ... done
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Expected result
 
-## Learn More
+Listing containers must show three containers running and the port mapping as below:
+```
+$ docker ps
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS                    NAMES
+30b7d9dc4898        react-rust-postgres_backend    "cargo run --offline"    37 seconds ago      Up 35 seconds       8000/tcp                 react-rust-postgres_backend_1
+0bca0cb682b8        react-rust-postgres_frontend   "docker-entrypoint.s…"   42 seconds ago      Up 41 seconds       0.0.0.0:3000->3000/tcp   react-rust-postgres_frontend_1
+1611961bf3d1        postgres:12-alpine             "docker-entrypoint.s…"   42 seconds ago      Up 36 seconds       0.0.0.0:5432->5432/tcp   react-rust-postgres_db_1
+```
 
-To learn more about Next.js, take a look at the following resources:
+After the application starts, navigate to `http://localhost:3000` in your web browser to get a colorful message.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+![page](./capture.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Stop and remove the containers
+```
+$ docker compose down
+Stopping react-rust-postgres_backend_1  ... done
+Stopping react-rust-postgres_frontend_1 ... done
+Stopping react-rust-postgres_db_1       ... done
+Removing react-rust-postgres_backend_1  ... done
+Removing react-rust-postgres_frontend_1 ... done
+Removing react-rust-postgres_db_1       ... done
+Removing network react-rust-postgres_default
+```
