@@ -1,1 +1,1 @@
-Proof of concept next.js frontend with PostGres & Rust (Arctix-Web) backend
+Proof of concept next.js frontend with PostGres & Rust backend held together by docker
